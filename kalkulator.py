@@ -1,8 +1,6 @@
 """Ne pozabi:
-    vektorski produkt
     determinante
-    lastne vrednosti, vektorji
-    potenciranje
+    potenciranje pri inverznih
 	datoteke
 	rang, inverzna
 """
@@ -26,12 +24,15 @@ class Vektor:
         __mul__,
         __sub__,
         desne verzije vseh naštetih računskih operacij,
+        __pow__,
+        __eq__,
         __repr__,
         __str__.
     Funkcije:
         dolzina,
         cos_kota,
-        kot.
+        kot,
+        vektorski_produkt.
     """
     
     def __init__(self, vektor = [0, 0, 0]):
@@ -125,7 +126,27 @@ class Vektor:
     """__radd__ in __rsub__ se aktivirata le, če levi operator ni vektor.
     Služita le nadzorovani sprožitvi napake.
     """
+    
+    def __pow__(self, eksponent):
+        nov_vektor = Vektor(copy.deepcopy(self.vektor))
+        for i in range(eksponent - 1):
+            nov_vektor *= self
+        return nov_vektor
+    
+    def __eq__(self, drugi):
         
+        try:
+            drugi.je_vektor
+        except AttributeError:
+            print('Elementa nista istega tipa (eden je vektor, drugi ne.')
+            return False
+        else:
+            if self.razseznost != drugi.razseznost:
+                return False
+            for i in range(self.razseznost):
+                if self.vektor[i] != drugi.vektor[i]:
+                    return False
+            return True
     
     def __repr__(self):
         return 'Vektor({0})'.format(self.vektor)
@@ -146,6 +167,14 @@ def cos_kota(vektor1, vektor2):
 
 def kot(vektor1, vektor2):
     return math.acos(cos_kota(vektor1, vektor2))
+
+def vektorski_produkt(vektor1, vektor2):
+    v1 = vektor1.vektor
+    v2 = vektor2.vektor
+    nov_vektor = [None, None, None]
+    nov_vektor[0] = v1[1] * v2[2] - v2[1] * v1[2]
+    nov_vektor[1] = - v1[0] * v2[2] + v2[0] * v1[2]
+    nov_vektor[2] = v1[0] * v2[1] - v2[0] * v1[1]
     
     
 class Matrika:
@@ -162,11 +191,14 @@ class Matrika:
         __mul__,
         __sub__,
         desne verzije vseh naštetih računskih operacij,
+        __pow__,
+        __eq__,
         __repr__,
         __str__,
         transponirana.
     Funkcije:
-        transponiranje.
+        transponiranje,
+        sled.
     """
     
     def __init__(self, matrika = [[0, 0], [0, 0]]):
@@ -331,6 +363,54 @@ class Matrika(Matrika):
     """__radd__ in __rsub__ ponovno služita zgolj nadzorovanemu javljanju
     napak."""
     
+    def __pow__(self, eksponent):
+        nova_matrika = Matrika(copy.deepcopy(self.matrika))
+        for i in range(eksponent - 1):
+            nova_matrika *= self
+        return nova_matrika
+    
+    def __eq__(self, druga):
+        
+        try:
+            drugi.je_matrika
+        except AttributeError:
+            print('Elementa nista istega tipa (eden je matrika, drugi ne.')
+            return False
+        else:
+            if self.m != druga.m or self.n != druga.n:
+                return False
+            for i in range(self.m):
+                for j in range(self.n):
+                    if self.matrika[i][j] != druga.matrika[i][j]:
+                        return False
+            return True
+        
+def sled(matrika):
+    sled_ = 0
+    for i in range(matrika.m):
+        sled_ += matrika.matrika[i][i]
+    return sled_
+
+
+def rang(matrika):
+    
+    def rang_(matrika_seznam):
+        
+        def je_0(seznam):
+            for element in seznam:
+                if element != 0:
+                    return False
+            return True
+    
+        if self.m == 1 and je_0(self.matrika)
+    
+    
+    
+    if self.m <= self.n:
+        if self.m == 1 and je_0(self.matrika[0]):
+            return 0
+        elif self.m == 1:
+        
     
     
     
