@@ -1,8 +1,5 @@
 """Ne pozabi:
-    determinante
-    potenciranje pri inverznih
 	datoteke
-	rang, inverzna
 """
 
 """Kalkulator računa z vektorji in matrikami."""
@@ -128,10 +125,22 @@ class Vektor:
     """
     
     def __pow__(self, eksponent):
-        nov_vektor = Vektor(copy.deepcopy(self.vektor))
-        for i in range(eksponent - 1):
-            nov_vektor *= self
-        return nov_vektor
+        try:
+            eksponent % 1
+        except TypeError:
+            print('Potenciranja ni mogoče izvesti. Eksponent ni naravno'
+                  ' število.')
+            return None
+        else:
+            if eksponent > 0 and eksponent % 1 == 0:
+                nov_vektor = Vektor(copy.deepcopy(self.vektor))
+                for i in range(eksponent - 1):
+                    nov_vektor *= self
+                return nov_vektor
+            else:
+                print('Potenciranja ni mogoče izvesti. Eksponent ni naravno'
+                  ' število.')
+                return None
     
     def __eq__(self, drugi):
         
@@ -221,7 +230,7 @@ class Matrika:
                 print(vrstica)
         else:
             print(self.matrika)
-        return '\n{0}x{1} razsežna matrika.'.format(self.m, self.n)
+        return '\n{0}x{1} matrika.'.format(self.m, self.n)
     
     def transponirana(self):
         stolpci = []
@@ -237,6 +246,12 @@ def transponiranje(matrika):
     nova_matrika = Matrika(matrika.matrika)
     nova_matrika.transponirana()
     return nova_matrika
+
+def identicna(n):
+    identicna_matrika = [[0 for i in range(n)] for i in range(n)]
+    for i in range(n):
+        identicna_matrika[i][i] = 1
+    return Matrika(identicna_matrika)
     
 
 class Matrika(Matrika):
@@ -364,15 +379,29 @@ class Matrika(Matrika):
     napak."""
     
     def __pow__(self, eksponent):
-        nova_matrika = Matrika(copy.deepcopy(self.matrika))
-        for i in range(eksponent - 1):
-            nova_matrika *= self
-        return nova_matrika
+        try:
+            eksponent % 1
+        except TypeError:
+            print('Potenciranja ni mogoče izvesti. Eksponent ni nenegativno'
+                  ' celo število.')
+            return None
+        else:
+            if eksponent > 0 and eksponent % 1 == 0:
+                nova_matrika = Matrika(copy.deepcopy(self.matrika))
+                for i in range(eksponent - 1):
+                    nova_matrika *= self
+                return nova_matrika
+            elif eksponent == 0:
+                return identicna(self.m)
+            else:
+                print('Potenciranja ni mogoče izvesti. Eksponent ni nenegativno'
+                  ' celo število.')
+                return None
     
     def __eq__(self, druga):
         
         try:
-            drugi.je_matrika
+            druga.je_matrika
         except AttributeError:
             print('Elementa nista istega tipa (eden je matrika, drugi ne.')
             return False
@@ -392,29 +421,56 @@ def sled(matrika):
     return sled_
 
 
-def rang(matrika):
-    
-    def rang_(matrika_seznam):
+def permutacije(n):
+    if n == 0:
+        return {()}
+    else:
+        trenutne_permutacije = permutacije(n - 1)
+        """Rekurzija."""
+        nove_permutacije = set()
         
-        def je_0(seznam):
-            for element in seznam:
-                if element != 0:
-                    return False
-            return True
-    
-        if self.m == 1 and je_0(self.matrika)
-    
-    
-    
-    if self.m <= self.n:
-        if self.m == 1 and je_0(self.matrika[0]):
-            return 0
-        elif self.m == 1:
+        for permutacija in trenutne_permutacije:
+            for i in range(len(permutacija) + 1):
+                nove_permutacije.add(
+                        permutacija[:i] + (n - 1, ) + permutacija[i:])
+                """Obstoječim permutacijam vrine število."""
+        return nove_permutacije
+
+def predznak_permutacije(perm):
+    inverzije = 0
+    for pozicija, stevilo in enumerate(perm):
+        for _ in perm[(pozicija + 1):]:
+            if _ < stevilo:
+                inverzije += 1
+    if inverzije % 2 == 0:
+        return 1
+    else:
+        return - 1
+
+def determinanta(matrika):
+    determinanta = 0
+    permutacije_ = permutacije(matrika.m)
+    for permutacija in permutacije_:
+        delna_det = 1
+        for i in range(matrika.m):
+            delna_det *= matrika.matrika[i][permutacija[i]]
+            """Na vsakem koraku notranje "for" zanke iz permutacije
+            izbere naslednji indeks."""
+        determinanta += predznak_permutacije(permutacija) * delna_det
+    return determinanta
+
+
+#import random
+#
+#def na(n):
+#    sez = []
+#    for i in range(n):
+#        sez2 = []
+#        for j in range(n):
+#            sez2.append(random.random())
+#        sez.append(sez2)
+#    return Matrika(sez)
         
-    
-    
-    
-    
     
     
     
