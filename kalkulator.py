@@ -1,12 +1,13 @@
-"""Ne pozabi:
-	datoteke
-"""
-
 """Kalkulator računa z vektorji in matrikami."""
+
+
+""" PROGRAM """
 
 import math
 import copy
 
+spominski_seznam = []
+"""Seznam za beleženje zgodovine kalkulatorja."""
 
 class Vektor:
     
@@ -31,7 +32,7 @@ class Vektor:
         kot,
         vektorski_produkt.
     """
-    
+
     def __init__(self, vektor = [0, 0, 0]):
         
         self.vektor = list(vektor)
@@ -40,6 +41,7 @@ class Vektor:
         """Obstoj atributa je_vektor služi kot edinstven pokazatelj,
         če je objekt res vektor. Vrednost atributa ni bistvena.
         """
+        spominski_seznam.append(self)
     
     
     def __add__(self, drugi):
@@ -207,7 +209,11 @@ class Matrika:
         transponirana.
     Funkcije:
         transponiranje,
-        sled.
+		identicna,
+        sled,
+		permutacije,
+		predznak_permutacije,
+		determinanta.
     """
     
     def __init__(self, matrika = [[0, 0], [0, 0]]):
@@ -220,6 +226,7 @@ class Matrika:
         """Obstoj atributa je_matrika služi kot edinstven pokazatelj,
         če je objekt res matrika. Vrednost atributa ni bistvena.
         """
+        spominski_seznam.append(self)
     
     def __repr__(self):
         return 'Matrika({0})'.format(self.matrika)
@@ -422,6 +429,9 @@ def sled(matrika):
 
 
 def permutacije(n):
+    """Pomožna funkcija za funkcijo "determinanta".
+    Vrne vse permutacije števil od 0 do n-1.
+    """
     if n == 0:
         return {()}
     else:
@@ -437,6 +447,9 @@ def permutacije(n):
         return nove_permutacije
 
 def predznak_permutacije(perm):
+    """Pomožna funkcija za funkcijo "determinanta".
+    Vrne predznak permutacije.
+    """
     inverzije = 0
     for pozicija, stevilo in enumerate(perm):
         for _ in perm[(pozicija + 1):]:
@@ -460,19 +473,21 @@ def determinanta(matrika):
     return determinanta
 
 
-#import random
-#
-#def na(n):
-#    sez = []
-#    for i in range(n):
-#        sez2 = []
-#        for j in range(n):
-#            sez2.append(random.random())
-#        sez.append(sez2)
-#    return Matrika(sez)
+
+""" GRAFIČNI VMESNIK """
         
-    
-    
+import tkinter as tk
+
+okno = tk.Tk()
+izpis = tk.Frame(okno)
+izpis.pack()
+vpis = tk.Frame(okno)
+vpis.pack()
+ukazi = tk.Frame(okno)
+ukazi.pack
+gumb = tk.Button(okno, text='bla')
+gumb.pack()
+okno.mainloop()
     
     
     
