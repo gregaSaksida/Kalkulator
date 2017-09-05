@@ -1,8 +1,5 @@
 """Kalkulator računa z vektorji in matrikami."""
 
-"""Funkcije za matrični kalkulator.
-insert funkcija
-Zgodovina?"""
 
 """ PROGRAM """
 
@@ -247,6 +244,7 @@ class Matrika:
         else:
             print(self.matrika)
         return '\n{0}x{1} matrika.'.format(self.m, self.n)
+
     
     def transponirana(self):
         stolpci = []
@@ -426,7 +424,7 @@ class Matrika(Matrika):
         try:
             druga.je_matrika
         except AttributeError:
-            print('Elementa nista istega tipa (eden je matrika, drugi ne.')
+            print('Elementa nista istega tipa (eden je matrika, drugi ne).')
             return False
         else:
             if self.m != druga.m or self.n != druga.n:
@@ -591,6 +589,9 @@ def izbrisi_proces():
     simbol = None
     operand = None
 
+def vstavi():
+    vhod2.insert('end', vhod.get())
+
 tk.Button(ukazi, text = '1', command=lambda: izpis(1)).grid(row=2, column=0)
 tk.Button(ukazi, text = '2', command=lambda: izpis(2)).grid(row=2, column=1)
 tk.Button(ukazi, text = '3', command=lambda: izpis(3)).grid(row=2, column=2)
@@ -603,14 +604,15 @@ tk.Button(ukazi, text = '9', command=lambda: izpis(9)).grid(row=0, column=2)
 tk.Button(ukazi, text = '0', command=lambda: izpis(0)).grid(row=3, column=0)
 
 tk.Button(ukazi, text = ',', command=lambda: izpis(',')).grid(row=3, column=1)
-tk.Button(ukazi, text = 'π', command=pi).grid(row=3, column=2)
+tk.Button(ukazi, text = 'π', command=pi).grid(row=2, column=3)
 tk.Button(ukazi, text = 'e', command=e).grid(row=3, column=3)
 tk.Button(ukazi, text = 'CE', command=izbrisi_vhod).grid(row=0, column=4)
 tk.Button(ukazi, text = 'AC', command=izbrisi_proces).grid(row=0, column=5)
 
 
-for i in range(3):
+for i in range(2):
     tk.Button(ukazi, text = '').grid(row=i, column=3)
+tk.Button(ukazi, text = '').grid(row=3, column=2)
     
 tk.Button(ukazi, text = '=', command=izracun).grid(row=3, column=4)
 tk.Button(ukazi, text = '==', command=lambda: operacija('==')).grid(
@@ -629,6 +631,7 @@ tk.Button(ukazi_zgornji, text = 'a^b', command=lambda: operacija('**')).grid(
 tk.Button(ukazi_zgornji, text = 'del', command=izbrisi_eno).grid(
         row=0, column=1)
 tk.Button(ukazi_zgornji, text = '+-', command=nasprotje).grid(row=0, column=2)
+tk.Button(ukazi_zgornji, text = 'vstavi', command=vstavi).grid(row=0, column=3)
 
 
 tk.Label(okno, text='|').grid(row=0, column=1)
@@ -648,7 +651,7 @@ matricni_kalkulator = tk.Frame(okno)
 matricni_kalkulator.grid(row=1, column=2)
 tk.Label(okno, text='Matrični kalkulator').grid(row=0, column=2)
 
-vhod2 = tk.Entry(matricni_kalkulator)
+vhod2 = tk.Entry(matricni_kalkulator, width=70)
 vhod2.pack()
 
 ukazi_zgornji2 = tk.Frame(matricni_kalkulator)
@@ -656,10 +659,28 @@ ukazi_zgornji2.pack()
 
 ukazi2 = tk.Frame(matricni_kalkulator)
 ukazi2.pack()
+izhod_ = tk.Frame(okno)
+izhod_.grid(row=1, column=3)
+izhod = tk.Text(izhod_, height = 30)
+izhod.pack()
+
+
+class Matrika(Matrika):
+    def izpisi_se(self):
+        for vrstica in self.matrika:
+            izhod.insert('insert', vrstica)
+            izhod.insert('insert', '\n')
+        izhod.insert('insert', '{0}x{1} matrika.'.format(self.m, self.n))
 
 
 simbol2 = None
 operand2 = None
+matrika = False
+vektor = False
+matrika_prava = None
+vektor_pravi = None
+
+
 def izpis2(vrednost):
     if vrednost != ',' or ',' not in vhod2.get():
         vhod2.insert(len(vhod2.get()), vrednost)
@@ -667,18 +688,39 @@ def izpis2(vrednost):
 def operacija2(simbol_):
     global simbol2
     global operand2
+    global matrika_prava
+    global vektor_pravi
     simbol2 = simbol_
-    operand2 = float(vhod2.get().replace(',', '.'))
+    if matrika_prava:
+        operand2 = matrika_prava
+    elif vektor_pravi:
+        operand2 = vektor_pravi
+    elif vhod2.get() != '':
+        operand2 = float(vhod2.get().replace(',', '.'))
+    else:
+        simbol2 = None
     vhod2.delete(0, 'end')
+    matrika_prava = None
+    vektor_pravi = None
 
 def izracun2():
     global simbol2
     global operand2
+    global matrika_prava
+    global vektor_pravi
     
-    if vhod2.get() == None or vhod2.get() == '':
-        drugi_operand = 0
-    else:
+    if matrika_prava:
+        drugi_operand = matrika_prava
+    elif vektor_pravi:
+        drugi_operand = vektor_pravi
+    elif vhod2.get() != '':
         drugi_operand = float(vhod2.get().replace(',', '.'))
+    else:
+        vhod2.delete(0, 'end')
+        vhod2.insert(0, 0)
+        simbol2 = None
+        operand2 = None
+        return None
     
     if operand2 == None or simbol2 == None:
         rezultat = drugi_operand
@@ -692,6 +734,12 @@ def izracun2():
         rezultat = operand2 / drugi_operand
     elif simbol2 == '**':
         rezultat = operand2 ** drugi_operand
+    elif simbol2 == 'cos':
+        rezultat = cos_kota(operand2, drugi_operand)
+    elif simbol2 == 'kot':
+        rezultat = kot(operand2, drugi_operand)
+    elif simbol2 == 'vektorski':
+        rezultat = vektorski_produkt(operand2, drugi_operand)
     elif simbol2 == '==':
         if operand2 == drugi_operand:
             rezultat = 'Drži.'
@@ -699,9 +747,17 @@ def izracun2():
             rezultat = 'Ne drži.'
         
     vhod2.delete(0, 'end')
-    vhod2.insert(0, rezultat)
+    try:
+        rezultat.je_matrika
+    except AttributeError:
+        vhod2.insert(0, rezultat)
+    else:
+        izhod.delete('0.0', 'end')
+        rezultat.izpisi_se()
     simbol2 = None
     operand2 = None
+    matrika_prava = None
+    vektor_pravi = None
 
 def nasprotje2():
     if vhod2.get() == None or vhod2.get() == '':
@@ -726,10 +782,19 @@ def izbrisi_vhod2():
 
 def izbrisi_proces2():
     vhod2.delete(0, 'end')
+    izhod.delete('0.0', 'end')
     global simbol2
     global operand2
+    global matrika
+    global vektor
+    global matrika_prava
+    global vektor_pravi
     simbol2 = None
     operand2 = None
+    matrika = None
+    vektor = None
+    matrika_prava = None
+    vektor_pravi = None
 
 tk.Button(ukazi2, text = '1', command=lambda: izpis2(1)).grid(row=2, column=0)
 tk.Button(ukazi2, text = '2', command=lambda: izpis2(2)).grid(row=2, column=1)
@@ -743,13 +808,13 @@ tk.Button(ukazi2, text = '9', command=lambda: izpis2(9)).grid(row=0, column=2)
 tk.Button(ukazi2, text = '0', command=lambda: izpis2(0)).grid(row=3, column=0)
 
 tk.Button(ukazi2, text = ',', command=lambda: izpis2(',')).grid(row=3, column=1)
-tk.Button(ukazi2, text = 'π', command=pi2).grid(row=3, column=2)
+tk.Button(ukazi2, text = 'π', command=pi2).grid(row=2, column=3)
 tk.Button(ukazi2, text = 'e', command=e2).grid(row=3, column=3)
 tk.Button(ukazi2, text = 'CE', command=izbrisi_vhod2).grid(row=0, column=4)
 tk.Button(ukazi2, text = 'AC', command=izbrisi_proces2).grid(row=0, column=5)
 
 
-for i in range(3):
+for i in range(2):
     tk.Button(ukazi2, text = '').grid(row=i, column=3)
     
 tk.Button(ukazi2, text = '=', command=izracun2).grid(row=3, column=4)
@@ -773,18 +838,148 @@ tk.Button(ukazi_zgornji2, text = '+-', command=nasprotje2).grid(row=0, column=2)
 
 """ Dodatne funckije matričnega kalkulatorja """
 
-#def M():
-#    
+def M():
+    global matrika
+    global vrstice
+    global matrika_prava
     
+    if matrika:
+        if vrstice:
+            matrika_prava = Matrika(vrstice)
+    else:
+        vrstice = []
     
+    matrika = not matrika
+
+
+def V():
+    global vektor
+    vektor = not vektor
+
+def potrdi():
+    global matrika
+    global vektor
+    global vektor_pravi
+    if matrika:
+        global vrstice
+        seznam = vhod2.get().split(';')
+        for i in range(len(seznam)):
+            seznam[i] = float(seznam[i].replace(',', '.'))
+        vrstice.append(seznam)
+        vhod2.delete(0, 'end')
     
+    elif vektor:
+        seznam = vhod2.get().split(';')
+        for i in range(len(seznam)):
+            seznam[i] = float(seznam[i].replace(',', '.'))
+        vektor_pravi = Vektor(seznam)
+    
+    vhod2.delete(0, 'end')
+
+
+def dolzina_():
+    global vektor_pravi
+    rezultat = dolzina(vektor_pravi)
+    vektor_pravi = None
+    vhod2.delete(0, 'end')
+    vhod2.insert(0, rezultat)
+
+
+def trans():
+    global matrika_prava
+    matrika_prava.transponirana()
+    vhod2.delete(0, 'end')
+    izhod.delete('0.0', 'end')
+    matrika_prava.izpisi_se()
+
+def identicna_():
+    global matrika_prava
+    n = int(vhod2.get())
+    matrika_prava = identicna(n)
+    vhod2.delete(0, 'end')
+    izhod.delete('0.0', 'end')
+    matrika_prava.izpisi_se()
+
+def sled_():
+    global matrika_prava
+    vhod2.delete(0, 'end')
+    vhod2.insert(0, sled(matrika_prava))
+    matrika_prava = None
+
+def det():
+    global matrika_prava
+    vhod2.delete(0, 'end')
+    vhod2.insert(0, determinanta(matrika_prava))
+    matrika_prava = None
+
+
+tk.Button(ukazi2, text = ';', command=lambda: izpis2(';')).grid(row=3, column=2)
+tk.Button(ukazi2, text = 'V', command=V).grid(
+        row=0, column=6)
+tk.Button(ukazi2, text = 'M', command=M).grid(row=1, column=6)
+tk.Button(ukazi2, text = '⏎', command=potrdi).grid(row=2, column=6)
+
+tk.Button(ukazi2, text = 'dolžina', command=dolzina_).grid(row=0, column=7)
+tk.Button(ukazi2, text = 'cos kota', command=lambda: operacija2('cos')).grid(
+        row=1, column=7)
+tk.Button(ukazi2, text = 'kot', command=lambda: operacija2('kot')).grid(
+        row=2, column=7)
+tk.Button(ukazi2, text = 'vekt. pr.', command=lambda: operacija2(
+        'vektorski')).grid(row=3, column=7)
+
+tk.Button(ukazi2, text = 'trans.', command=trans).grid(row=0, column=8)
+tk.Button(ukazi2, text = 'ɪ', command=identicna_).grid(row=1, column=8)
+tk.Button(ukazi2, text = 'sled', command=sled_).grid(row=2, column=8)
+tk.Button(ukazi2, text = 'det', command=det).grid(row=3, column=8)
+
+
+tk.Label(okno, text='Navodila:').grid(row=0, column=4)
+tk.Label(okno, text=(
+        'Levi kalkulator je namenjen računanju\n'
+        ' s števili med vpisovanjem matrik ali \n'
+        'vektorjev v desnem kalkulatorju.\n'
+        '\n'
+        'Kalkulator lahko hkrati izvede le eno\n'
+        'računsko operacijo. Za vsako izbrano\n'
+        'operacijo morate klikniti tipko "="\n'
+        'natanko enkrat. Primer: proces\n'
+        '3+4+5 ni dovoljen.\n'
+        'Proces 3+4=; +5= je.\n'
+        '\n'
+         'Tipke: del: izbriše zadnji vpisani znak, \n'
+         'vstavi: število iz skalarnega kalkulatorja \n'
+         'vstavi v matričnega, \n'
+         'CE: počisti vpisno polje, \n'
+         'AC: ponastavi kalkulator. \n'
+         'ɪ: vrne identično matriko želene\n'
+         'dimenzije.\n'
+         '\n'
+         'Elemente in operacije vpisujte v takem \n'
+         'vrstnem redu, kot bi jih, če bi jih \n'
+         'pisali na roko. Tipka = izvede \n'
+         'operacijo in ponastavi kalkulator. \n'
+         'Operacija == preverja enakost elementov,\n'
+         'uporabljajte jo, kot vse ostale operacije.\n'
+         '\n'
+         'Matrični kalkulator:\n'
+         'za vpis vektorja kliknite tipko "V",\n'
+         ' komponente vektorja ločite s podpičjem\n'
+         ' (desno od decimalne vejice). Ko \n'
+         'končate, pritisnite tipko ⏎.\n'
+         '\n'
+         'Za vpis matrike kliknite tipko "M".\n'
+         'Vnesite prvo vrstico matrike, njene\n'
+         'komponente ločite s podpičjem. Ko\n'
+         'vnesete celotno vrstico, kliknite\n'
+         'tipko ⏎ ter vnesite drugo vrstico.\n'
+         '⏎ kliknite tudi po vnostu zadnje\n'
+         'vrstice, nakar ponovno kliknite\n'
+         'tipko "M".'
+         '\n')).grid(row=1, column=4)
+
+
+
 okno.mainloop()
-    
-    
-    
-#for i in range(0, 9):
-#    tk.Button(ukazi, text='{0}'.format(i+1), command=lambda: izpis(i+1)).grid(
-#            row = 2 - i // 3, column = i % 3)
     
     
     
