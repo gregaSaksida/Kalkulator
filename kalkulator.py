@@ -559,7 +559,7 @@ def izracun():
     vhod.delete(0, 'end')
     vhod.insert(0, rezultat)
     simbol = None
-    operand = None
+    operand = rezultat
 
 def nasprotje():
     if vhod.get() == None or vhod.get() == '':
@@ -755,7 +755,7 @@ def izracun2():
         izhod.delete('0.0', 'end')
         rezultat.izpisi_se()
     simbol2 = None
-    operand2 = None
+    operand2 = rezultat
     matrika_prava = None
     vektor_pravi = None
 
@@ -957,7 +957,7 @@ tk.Label(okno, text=(
          'Elemente in operacije vpisujte v takem \n'
          'vrstnem redu, kot bi jih, če bi jih \n'
          'pisali na roko. Tipka = izvede \n'
-         'operacijo in ponastavi kalkulator. \n'
+         'operacijo in pobriše vnos. \n'
          'Operacija == preverja enakost elementov,\n'
          'uporabljajte jo, kot vse ostale operacije.\n'
          '\n'
@@ -974,7 +974,18 @@ tk.Label(okno, text=(
          'tipko ⏎ ter vnesite drugo vrstico.\n'
          '⏎ kliknite tudi po vnostu zadnje\n'
          'vrstice, nakar ponovno kliknite\n'
-         'tipko "M".'
+         'tipko "M".\n'
+         '\n'
+         'Operacije "cos kota", "kot" in \n'
+         '"vekt. pr." uporabljajte kot'
+         'navadne operacije.\n'
+         'Operacije "dolžina", "trans.",\n'
+         '"sled" in "det" uporabljajte\n'
+         'tako, da najprej vpišete element,\n'
+         'nato pa izberete operacijo.\n'
+         'Opozorilo: operacija "det" postane\n'
+         'časovno zelo zahtevna za matrike\n'
+         'večje od 10x10.'
          '\n')).grid(row=1, column=4)
 
 
